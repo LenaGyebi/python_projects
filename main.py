@@ -3,7 +3,7 @@ from uuid import uuid4, UUID
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from models import Roles
+from models import Roles, UpdateRequest
 from models import User
 from models import Gender
 
@@ -20,9 +20,11 @@ db: List[User] = [
         id = UUID("e4c15b6e-e5da-4ff1-89b8-a710c2bb192b"),
         first_name='David',
         last_name='Gyebi',
-        middle_name = None,
+        middle_name=None,
         gender=Gender.male,
-        roles =[Roles.user, Roles.admin]
+        roles=[Roles.user, Roles.admin],
+        address="",
+        employer=""
         ),
 
     User(
@@ -31,7 +33,9 @@ db: List[User] = [
         last_name="Gyebi",
         middle_name='Abena',
         gender=Gender.female,
-        roles=[Roles.student]
+        roles=[Roles.student],
+        address="",
+        employer=""
     )
 ]
 
@@ -46,7 +50,22 @@ async def fetch_users():
 @app.post("/api/v1/users")
 async def register_user(user: User):
    db.append(user)
-   return {"id" : user.id}
+   return {"id": user.id}
+
+@app.put("/api/v1/users/{user_id}/")
+async def update_user(user_id: UUID, update_request: UpdateRequest):
+    for user in db:
+        if user_id == user.id:
+            if update_request.address is not None:
+                user.address = update_request.address
+            if update_request.employer is not None:
+                user.employer = update_request.employer
+            return {"message": "User address and employer is updated"}
+           
+        if not user:
+            raise HTTPException( status_code=404, detail=f"user not found")
+    return {"User address and employer has been added"}
+
 
 @app.delete("/api/v1/users/{user_id}")
 async def delete_user(user_id: UUID):
