@@ -3,7 +3,7 @@ from uuid import uuid4, UUID
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from models import Roles, UpdateRequest
+from models import Roles, UpdateRequest, AddDetails
 from models import User
 from models import Gender
 
@@ -39,6 +39,15 @@ db: List[User] = [
     )
 ]
 
+db: List[AddDetails] = [
+    AddDetails(
+        employer_name = 'Bost Growth',
+        employer_address = 'London street',
+        employer_business_start_date = '5th June 2013'
+    )
+]
+
+
 @app.get("/")
 async def root():
     return {"Hello: Abigail"}
@@ -52,6 +61,12 @@ async def register_user(user: User):
    db.append(user)
    return {"id": user.id}
 
+@app.post("/api/vi/users/{user_id}")
+async def add_employer_details(user_id: UUID, AddDetails):
+    for user in db:
+        if user_id == user.id:
+
+
 @app.put("/api/v1/users/{user_id}/")
 async def update_user(user_id: UUID, update_request: UpdateRequest):
     for user in db:
@@ -61,7 +76,6 @@ async def update_user(user_id: UUID, update_request: UpdateRequest):
             if update_request.employer is not None:
                 user.employer = update_request.employer
             return {"message": "User address and employer is updated"}
-           
         if not user:
             raise HTTPException( status_code=404, detail=f"user not found")
     return {"User address and employer has been added"}
