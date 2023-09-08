@@ -61,10 +61,10 @@ async def register_user(user: User):
    db.append(user)
    return {"id": user.id}
 
-@app.post("/api/vi/users/{user_id}")
+"""@app.post("/api/vi/users/{user_id}")
 async def add_employer_details(user_id: UUID, AddDetails):
     for user in db:
-        if user_id == user.id:
+        if user_id == user.id:"""
 
 
 @app.put("/api/v1/users/{user_id}/")
